@@ -60,5 +60,46 @@ User.findById = (id, result) => {
 
 
 // update user
-// modify a user record
+User.updateById = (id, user, result) => {
+    sql.query(
+        "UPDATE users SET userID = ?, firstName = ?, lastName = ?, gender = ?, userDOB = ?, emailAdd = ?, userPass = ?, profileUrl = ? WHERE userID = ?", [user.UserID, user.firstName, user.lastName, user.gender, user.userDOB, user.emailAdd, user.userPass, user.profileUrl, id], 
+
+        (err, res) => {
+            if(err){
+                console.log("error: ", err); 
+                result(null, err); 
+                return; 
+            }
+
+            if(res.affectedRows == 0){
+                // not found
+                result({kind: "not_found"}, null); 
+                return; 
+            }
+            console.log("updated user: ", {id: id, ...user})
+            result(null, {id: id, ...user});
+        }
+    )
+}
+
+
 // delete a single user
+User.remove = (id, result) => {
+    sql.query("DELETE FROM users WHERE userID = ?", id, (err, res) => {
+        if(err){
+            console.log("error", err); 
+            result(null, err); 
+            return; 
+        }
+
+        if(res.affectedRows == 0){
+            // not found
+            result({kind: "not_found"}, null);
+            return;
+        }
+        console.log("deleted the user with id: ", id);
+        result(null, res);
+    });
+}
+
+module.exports = User; 
